@@ -27,8 +27,8 @@ model Driver {
   season        Int
   active        Boolean  @default(true)
   
-  picksA        Pick[]   @relation(DriverA)
-  picksB        Pick[]   @relation(DriverB)
+  picksA        Pick[]   @relation("DriverA")
+  picksB        Pick[]   @relation("DriverB")
   leadDrivers   LeadDriver[]
   results       RaceResult[]
   
@@ -75,8 +75,8 @@ model Pick {
   
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   race          Race     @relation(fields: [raceId], references: [id], onDelete: Cascade)
-  driverA       Driver   @relation(DriverA, fields: [driverAId], references: [id])
-  driverB       Driver   @relation(DriverB, fields: [driverBId], references: [id])
+  driverA       Driver   @relation("DriverA", fields: [driverAId], references: [id])
+  driverB       Driver   @relation("DriverB", fields: [driverBId], references: [id])
   
   @@unique([userId, raceId])
 }
