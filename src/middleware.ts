@@ -1,9 +1,7 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth";
 
-export default auth((req) => {
-  // Add any custom middleware logic here if needed
-  return;
-});
+export const { auth: middleware } = NextAuth(authConfig);
 
 export const config = {
   matcher: ["/dashboard/:path*", "/picks/:path*", "/standings/:path*", "/admin/:path*"],

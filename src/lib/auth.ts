@@ -1,11 +1,10 @@
 import NextAuth from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+// Edge-compatible auth config (no Prisma)
+export const authConfig: NextAuthConfig = {
   session: {
     strategy: "jwt",
   },
@@ -23,6 +22,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
+
+        // Import prisma only here (not at module level for edge compatibility)
+        const { prisma } = await import("@/lib/db");
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
@@ -65,5 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-});
+};
+
+export const { handlers, signIn, signOut, auth } = NextAuth(authConfig);
 
