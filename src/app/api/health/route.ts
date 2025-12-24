@@ -1,7 +1,19 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const checks = {
+  const checks: {
+    status: string;
+    timestamp: string;
+    environment: string | undefined;
+    checks: {
+      databaseUrl: boolean;
+      authSecret: boolean;
+      authTrustHost: string | undefined;
+      authUrl: string | undefined;
+      database?: boolean;
+    };
+    errors: string[];
+  } = {
     status: "checking",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
@@ -11,7 +23,7 @@ export async function GET() {
       authTrustHost: process.env.AUTH_TRUST_HOST,
       authUrl: process.env.AUTH_URL,
     },
-    errors: [] as string[],
+    errors: [],
   };
 
   // Check required env vars
@@ -26,9 +38,9 @@ export async function GET() {
   try {
     const { prisma } = await import("@/lib/db");
     await prisma.$queryRaw`SELECT 1`;
-    checks.checks = { ...checks.checks, database: true };
+    checks.checks.database = true;
   } catch (error) {
-    checks.checks = { ...checks.checks, database: false };
+    checks.checks.database = false;
     checks.errors.push(
       `Database connection failed: ${error instanceof Error ? error.message : "Unknown error"}`
     );
