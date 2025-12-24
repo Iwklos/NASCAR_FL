@@ -27,7 +27,7 @@
 
 **Files Changed:**
 - `src/lib/auth.ts` - Added `authConfig` export, dynamic imports
-- `src/middleware.ts` - Uses edge-compatible NextAuth instance
+- `src/proxy.ts` - Uses edge-compatible NextAuth instance (Next.js 16 convention)
 
 ### 3. ✅ Prisma Client Generation
 **Problem:** Prisma client not generated during Vercel build
@@ -58,7 +58,7 @@
 
 1. **Authentication Core:**
    - ✅ `src/lib/auth.ts` - Complete NextAuth v5 migration with Edge compatibility
-   - ✅ `src/middleware.ts` - Edge-compatible middleware
+   - ✅ `src/proxy.ts` - Edge-compatible proxy (Next.js 16 uses proxy instead of middleware)
    - ✅ `src/app/api/auth/[...nextauth]/route.ts` - Handler exports
 
 2. **Server Components:**
