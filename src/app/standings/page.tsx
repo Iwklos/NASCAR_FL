@@ -2,6 +2,9 @@ import { prisma } from "@/lib/db";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function StandingsPage() {
   const currentSeason = new Date().getFullYear();
   
