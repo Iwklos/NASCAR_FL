@@ -1,0 +1,109 @@
+generator client {
+  provider = prisma-client-js
+}
+
+datasource db {
+  provider = postgresql
+  url      = env(DATABASE_URL)
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  teamName      String   @unique
+  isAdmin       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  
+  picks         Pick[]
+  leadDriver    LeadDriver?
+  standings     Standings[]
+}
+
+model Driver {
+  id            String   @id @default(cuid())
+  name          String
+  number        String
+  group         String
+  season        Int
+  active        Boolean  @default(true)
+  
+  picksA        Pick[]   @relation(DriverA)
+  picksB        Pick[]   @relation(DriverB)
+  leadDrivers   LeadDriver[]
+  results       RaceResult[]
+  
+  @@unique([number, season])
+}
+
+model LeadDriver {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  driverId      String
+  season        Int
+  timesUsed     Int      @default(0)
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  driver        Driver   @relation(fields: [driverId], references: [id])
+  
+  @@unique([userId, season])
+}
+
+model Race {
+  id            String   @id @default(cuid())
+  name          String
+  track         String
+  date          DateTime
+  season        Int
+  raceNumber    Int
+  completed     Boolean  @default(false)
+  resultsFileUrl String?
+  
+  picks         Pick[]
+  results       RaceResult[]
+  
+  @@unique([season, raceNumber])
+}
+
+model Pick {
+  id            String   @id @default(cuid())
+  userId        String
+  raceId        String
+  driverAId     String
+  driverBId     String
+  isLeadDriver  Boolean  @default(false)
+  submittedAt   DateTime @default(now())
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  race          Race     @relation(fields: [raceId], references: [id], onDelete: Cascade)
+  driverA       Driver   @relation(DriverA, fields: [driverAId], references: [id])
+  driverB       Driver   @relation(DriverB, fields: [driverBId], references: [id])
+  
+  @@unique([userId, raceId])
+}
+
+model RaceResult {
+  id            String   @id @default(cuid())
+  raceId        String
+  driverId      String
+  position      Int
+  points        Int
+  
+  race          Race     @relation(fields: [raceId], references: [id], onDelete: Cascade)
+  driver        Driver   @relation(fields: [driverId], references: [id])
+  
+  @@unique([raceId, driverId])
+}
+
+model Standings {
+  id            String   @id @default(cuid())
+  userId        String
+  season        Int
+  totalPoints   Int
+  weeklyPoints  Json
+  lastUpdated   DateTime @default(now())
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, season])
+}
